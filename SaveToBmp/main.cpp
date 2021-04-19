@@ -38,7 +38,7 @@ D3D_FEATURE_LEVEL gFeatureLevels[] =
 
 UINT gNumFeatureLevels = ARRAYSIZE(gFeatureLevels);
 
-void saveBMP(void* buffer, UINT bufferSize, UINT threadId, UINT index)
+void saveBMP(void* buffer, UINT bufferSize, UINT threadId, UINT index, int width, int height)
 {
 	BITMAPINFO	lBmpInfo;
 
@@ -52,17 +52,17 @@ void saveBMP(void* buffer, UINT bufferSize, UINT threadId, UINT index)
 
 	lBmpInfo.bmiHeader.biCompression = BI_RGB;
 
-	lBmpInfo.bmiHeader.biWidth = 1920;
+	lBmpInfo.bmiHeader.biWidth = width;
 
-	lBmpInfo.bmiHeader.biHeight = 1080;
+	lBmpInfo.bmiHeader.biHeight = height;
 
 	lBmpInfo.bmiHeader.biPlanes = 1;
 
-	lBmpInfo.bmiHeader.biSizeImage = 1920 * 1080 * 4;
+	lBmpInfo.bmiHeader.biSizeImage = width * height * 4;
 
 
 	std::unique_ptr<BYTE> pBuf(new BYTE[lBmpInfo.bmiHeader.biSizeImage]);
-	memcpy(pBuf.get(), buffer, bufferSize);
+	memcpy(pBuf.get(), buffer, lBmpInfo.bmiHeader.biSizeImage);
 
 
 	WCHAR lMyDocPath[MAX_PATH];
@@ -112,34 +112,52 @@ void foo(ScreenMirrorWrapper* wrapper, int threadId)
 
 	wrapper->StartCapture();
 
-	for (int i = 0; i < 103; i++) {
+	for (int i = 0; i < 203; i++) {
 		::Sleep(40);
 		wrapper->GetScreenFrame(buffer, bufferSize);
-		if (i % 100 == 0) {
+		
+		if (i % 100 == 0) 
+		{
+			int width = 0, height = 0;
+			wrapper->GetScreenSize(width, height);
+
 			printf("Grabbed %d frame \n", i);
-			saveBMP(buffer, bufferSize, threadId, i);
+			saveBMP(buffer, bufferSize, threadId, i, width, height);
 		}
 	}
 
 	wrapper->CloseCapture();
 }
 
+//BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+//{
+//	WCHAR class_name[512];
+//	WCHAR title[512];
+//	GetClassName(hwnd, class_name, sizeof(class_name));
+//	GetWindowText(hwnd, title, sizeof(title));
+//	wprintf(L"Window %s : %s \n", title, class_name);
+//
+//	return TRUE;
+//}
+
 int main()
 {
 	HRESULT hr;
 
+	//EnumWindows(EnumWindowsProc, NULL);
+
 	ScreenMirrorWrapper* wrapper = new ScreenMirrorWrapper();
 	wrapper->Initialize();
-	wrapper->SelectWindow();
+	wrapper->SelectWindowDialog();
 
-	//std::thread thread1(foo, wrapper, 1);
+	std::thread thread1(foo, wrapper, 1);
 	//std::thread thread2(foo, wrapper, 2);
 	//std::thread thread3(foo, wrapper, 3);
 	//std::thread thread4(foo, wrapper, 4);
 
 	////::Sleep(500);
 
-	//thread1.join();
+	thread1.join();
 	//thread2.join();
 	//thread3.join();
 	//thread4.join();

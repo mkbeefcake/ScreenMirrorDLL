@@ -146,13 +146,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ComPtr.h" />
+    <ClInclude Include="D3DMonitor.h" />
     <ClInclude Include="FindWindow.h" />
+    <ClInclude Include="GDIMonitor.h" />
+    <ClInclude Include="MonitorBase.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScreenMirror.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="D3DMonitor.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -168,6 +172,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FindWindow.cpp" />
+    <ClCompile Include="GDIMonitor.cpp" />
     <ClCompile Include="ScreenMirror.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

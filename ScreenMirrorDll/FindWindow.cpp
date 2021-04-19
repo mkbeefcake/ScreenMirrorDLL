@@ -15,17 +15,15 @@ HBITMAP		g_hBitmapFinderToolEmpty;
 HWND		g_hwndFoundWindow = NULL;
 HPEN		g_hRectanglePen = NULL;
 
-HWND globalSearchedWindow = NULL;
-//HWND globalRegisteredWindow[5];
-//UINT globalRegisteredLast = 0;
-ULONG globalMonitors = 0;
-INT   globalSelectedMonitor = -1;
+HWND		globalSearchedWindow = NULL;
+ULONG		globalMonitors = 0;
+INT			globalSelectedMonitor = -1;
 
 BOOL InitialiseResources()
 {
 	BOOL bRet = FALSE;
 
-	g_hCursorSearchWindow = LoadCursor(g_hInst, MAKEINTRESOURCE(IDC_CURSOR_SEARCH_WINDOW));
+	g_hCursorSearchWindow = LoadCursor(globalInstance, MAKEINTRESOURCE(IDC_CURSOR_SEARCH_WINDOW));
 	if (g_hCursorSearchWindow == NULL)
 	{
 		bRet = FALSE;
@@ -39,14 +37,14 @@ BOOL InitialiseResources()
 		goto InitialiseResources_0;
 	}
 
-	g_hBitmapFinderToolFilled = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP_FINDER_FILLED));
+	g_hBitmapFinderToolFilled = LoadBitmap(globalInstance, MAKEINTRESOURCE(IDB_BITMAP_FINDER_FILLED));
 	if (g_hBitmapFinderToolFilled == NULL)
 	{
 		bRet = FALSE;
 		goto InitialiseResources_0;
 	}
 
-	g_hBitmapFinderToolEmpty = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP_FINDER_EMPTY));
+	g_hBitmapFinderToolEmpty = LoadBitmap(globalInstance, MAKEINTRESOURCE(IDB_BITMAP_FINDER_EMPTY));
 	if (g_hBitmapFinderToolEmpty == NULL)
 	{
 		bRet = FALSE;
@@ -111,7 +109,7 @@ BOOL StartSearchWindowDialog(UINT monitors, INT& selectedMonitor, HWND& selected
 
 	lRet = (long)DialogBox
 	(
-		(HINSTANCE)g_hInst, // handle to application instance 
+		(HINSTANCE)globalInstance, // handle to application instance 
 		(LPCTSTR)MAKEINTRESOURCE(IDD_DIALOG_SEARCH_WINDOW), // identifies dialog box template 
 		(HWND)g_hwndMainWnd, // handle to owner window 
 		(DLGPROC)SearchWindowDialogProc // pointer to dialog box procedure 
@@ -128,7 +126,6 @@ BOOL StartSearchWindowDialog(UINT monitors, INT& selectedMonitor, HWND& selected
 
 	return true;
 }
-
 
 
 // Synopsis :
@@ -190,10 +187,6 @@ CheckWindowValidity_0:
 
 	return bRet;
 }
-
-
-
-
 
 // Synopsis :
 // 1. This is the handler for WM_MOUSEMOVE messages sent to the "Search Window" dialog proc.
@@ -261,10 +254,6 @@ long DoMouseMove
 	return lRet;
 }
 
-
-
-
-
 // Synopsis :
 // 1. Handler for WM_LBUTTONUP message sent to the "Search Window" dialog box.
 // 
@@ -310,10 +299,6 @@ long DoMouseUp
 	return lRet;
 }
 
-
-
-
-
 // Synopsis :
 // 1. This routine sets the Finder Tool icon to contain an appropriate bitmap.
 //
@@ -347,10 +332,6 @@ BOOL SetFinderToolImage(HWND hwndDialog, BOOL bSet)
 	return bRet;
 }
 
-
-
-
-
 // Synopsis :
 // 1. This routine moves the mouse cursor hotspot to the exact 
 // centre position of the bullseye in the finder tool static control.
@@ -383,10 +364,6 @@ BOOL MoveCursorPositionToBullsEye(HWND hwndDialog)
 
 	return bRet;
 }
-
-
-
-
 
 // Synopsis :
 // 1. This function starts the window searching operation.
@@ -426,10 +403,6 @@ long SearchWindow(HWND hwndDialog)
 	return lRet;
 }
 
-
-
-
-
 long DisplayInfoOnFoundWindow(HWND hwndDialog, HWND hwndFoundWindow)
 {
 	RECT		rect;              // Rectangle area of the found window.
@@ -461,10 +434,6 @@ long DisplayInfoOnFoundWindow(HWND hwndDialog, HWND hwndFoundWindow)
 	return lRet;
 }
 
-
-
-
-
 long RefreshWindow(HWND hwndWindowToBeRefreshed)
 {
 	long lRet = 0;
@@ -475,9 +444,6 @@ long RefreshWindow(HWND hwndWindowToBeRefreshed)
 
 	return lRet;
 }
-
-
-
 
 
 // Performs a highlighting of a found window.
@@ -518,10 +484,6 @@ long HighlightFoundWindow(HWND hwndDialog, HWND hwndFoundWindow)
 
 	return lRet;
 }
-
-
-
-
 
 BOOL CALLBACK SearchWindowDialogProc
 (

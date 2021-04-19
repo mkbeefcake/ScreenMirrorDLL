@@ -2,24 +2,28 @@
 
 #include <windows.h>
 
-extern HINSTANCE g_hInst;
+extern HINSTANCE globalInstance;
 
 BOOL InitialiseResources();
 BOOL UninitialiseResources();
 
-BOOL StartSearchWindowDialog(UINT monitors, INT &selectedMonitor, HWND &selectedWindow);
-BOOL CheckWindowValidity(HWND hwndDialog, HWND hwndToCheck);
+BOOL StartSearchWindowDialog(
+	UINT monitors, 
+	INT &selectedMonitor, 
+	HWND &selectedWindow);
 
-long DoMouseMove
-(
+BOOL CheckWindowValidity(
+	HWND hwndDialog, 
+	HWND hwndToCheck);
+
+long DoMouseMove(
 	HWND hwndDialog,
 	UINT message,
 	WPARAM wParam,
 	LPARAM lParam
 );
 
-long DoMouseUp
-(
+long DoMouseUp(
 	HWND hwndDialog,
 	UINT message,
 	WPARAM wParam,
@@ -33,8 +37,7 @@ long DisplayInfoOnFoundWindow(HWND hwndDialog, HWND hwndFoundWindow);
 long RefreshWindow(HWND hwndWindowToBeRefreshed);
 long HighlightFoundWindow(HWND hwndDialog, HWND hwndFoundWindow);
 
-BOOL CALLBACK SearchWindowDialogProc
-(
+BOOL CALLBACK SearchWindowDialogProc(
 	HWND hwndDlg, // handle to dialog box 
 	UINT uMsg, // message 
 	WPARAM wParam, // first message parameter 
