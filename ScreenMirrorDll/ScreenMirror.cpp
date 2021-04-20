@@ -8,6 +8,7 @@
 #include <mutex>
 #include <cstdio>
 #include "FindWindow.h"
+#include "GDIMonitor.h"
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -27,7 +28,8 @@ ScreenMirrorWrapper::ScreenMirrorWrapper()
 	screenBufferSize = 0;
 	bThreadStarted = FALSE;
 
-	changedWindowFuncs.clear();
+	gdiMonitors = new GDIMonitors();
+	//changedWindowFuncs.clear();
 }
 
 ScreenMirrorWrapper::~ScreenMirrorWrapper()
@@ -61,12 +63,14 @@ bool ScreenMirrorWrapper::Initialize()
 
 	InitialiseResources();
 
+	PrintLog("ScreenMirrorWrapper::Initialize() - Initialized resources. \n");
+
 	//
 	// Create screen buffer
 	//
 
-	int width = gdiMonitors.GetWidth();
-	int height = gdiMonitors.GetHeight();
+	int width = gdiMonitors->GetWidth();
+	int height = gdiMonitors->GetHeight();
 
 	if (width > 0 && height > 0)
 	{
@@ -79,6 +83,7 @@ bool ScreenMirrorWrapper::Initialize()
 		screenBufferSize = width * height * 4;
 		memset(screenBuffer, 0, screenBufferSize);
 	}
+
 
 	return true;
 }
@@ -104,19 +109,19 @@ bool ScreenMirrorWrapper::Finalize()
 	globalMutex.unlock();
 
 	bThreadStarted = FALSE;
-	changedWindowFuncs.clear();
+	//changedWindowFuncs.clear();
 
 	return true;
 }
 
-bool ScreenMirrorWrapper::RegisterCallback(ChangedWindowCallback callBack)
-{
-	if (callBack == NULL)
-		return false;
-
-	changedWindowFuncs.push_back(callBack);
-	return true;
-}
+//bool ScreenMirrorWrapper::RegisterCallback(ChangedWindowCallback callBack)
+//{
+//	if (callBack == NULL)
+//		return false;
+//
+//	changedWindowFuncs.push_back(callBack);
+//	return true;
+//}
 
 bool ScreenMirrorWrapper::StartCapture()
 {
@@ -142,7 +147,7 @@ bool ScreenMirrorWrapper::StartCapture()
 
 void CaptureThread(ScreenMirrorWrapper* wrapper)
 {
-	wrapper->PrintLog("CaptureThread::() Started...\n");
+	ScreenMirrorWrapper::PrintLog("CaptureThread::() Started...\n");
 
 	wrapper->bThreadStarted = TRUE;
 
@@ -162,7 +167,7 @@ bool ScreenMirrorWrapper::CloseCapture()
 	refCount--;
 	if (refCount < 0) 
 	{
-		refCount == 0;
+		refCount = 0;
 	}
 
 	PrintLog("ScreenMirrorWrapper::CloseCapture() - Ref = %d\n", refCount);
@@ -172,8 +177,10 @@ bool ScreenMirrorWrapper::CloseCapture()
 
 bool ScreenMirrorWrapper::GetScreenSize(int& width, int& height)
 {
-	width = gdiMonitors.GetWidth();
-	height = gdiMonitors.GetHeight();
+	width = gdiMonitors->GetWidth();
+	height = gdiMonitors->GetHeight();
+
+	// PrintLog("ScreenMirrorWrapper::GetScreenSize() - width = %d, height = %d\n", width, height);
 	return true;
 }
 
@@ -206,18 +213,18 @@ bool ScreenMirrorWrapper::SelectWindowDialog()
 	INT selectedMonitor = -1;
 	HWND selectedWindow = NULL;
 
-	BOOL bRet = StartSearchWindowDialog(gdiMonitors.GetMonitors(), selectedMonitor, selectedWindow);	// multiple monitors count
-	if (bRet == true)
+	BOOL bRet = StartSearchWindowDialog(gdiMonitors->GetMonitors(), selectedMonitor, selectedWindow);	// multiple monitors count
+	if (bRet == TRUE)
 	{
 		globalMutex.lock();
 		{
 			if (selectedWindow) 
 			{
-				gdiMonitors.SetTargetWindow(selectedWindow);
+				gdiMonitors->SetTargetWindow(selectedWindow);
 			}
 			else if (selectedMonitor != -1) 
 			{
-				gdiMonitors.SetCurrentMonitor(selectedMonitor);
+				gdiMonitors->SetCurrentMonitor(selectedMonitor);
 			}
 
 			if (screenBuffer) 
@@ -232,13 +239,13 @@ bool ScreenMirrorWrapper::SelectWindowDialog()
 		// invoke callback functions
 		//
 
-		for (int i = 0; i < changedWindowFuncs.size(); i++) 
-		{
-			changedWindowFuncs[i](gdiMonitors.GetWidth(), gdiMonitors.GetHeight());
-		}
+		//for (int i = 0; i < changedWindowFuncs.size(); i++) 
+		//{
+		//	changedWindowFuncs[i](gdiMonitors->GetWidth(), gdiMonitors->GetHeight());
+		//}
 	}
 
-	return TRUE;
+	return bRet;
 }
 
 
@@ -249,15 +256,15 @@ int ScreenMirrorWrapper::GetNextScreenFrame()
 	{
 		if (screenBuffer == NULL || screenBufferSize == 0) 
 		{
-			int width = gdiMonitors.GetWidth();
-			int height = gdiMonitors.GetHeight();
+			int width = gdiMonitors->GetWidth();
+			int height = gdiMonitors->GetHeight();
 
 			screenBufferSize = width * height * 4;
 			screenBuffer = malloc(screenBufferSize);
 			memset(screenBuffer, 0, screenBufferSize);
 		}
 
-		gdiMonitors.GetScreenData(screenBuffer, screenBufferSize);
+		gdiMonitors->GetScreenData(screenBuffer, screenBufferSize);
 	}
 	globalMutex.unlock();
 	return size;

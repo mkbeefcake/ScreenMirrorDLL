@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GDIMonitor.h"
+#include "ScreenMirror.h"
 
 static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
 {
@@ -17,14 +18,21 @@ static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPA
 	HDC hDC = CreateDC(TEXT("DISPLAY"), info.szDevice, NULL, NULL);
 	pThis->hdcMonitors.push_back(hDC);
 
+	ScreenMirrorWrapper::PrintLog("GDIMonitors::MonitorEnum() - HDC = 0x%x, Index = %d \n", 
+		hDC, pThis->hdcMonitors.size());
+
 	return TRUE;
 }
 
 GDIMonitors::GDIMonitors()
 {
+	ScreenMirrorWrapper::PrintLog("GDIMonitors::GDIMonitors() is called\n");
+
 	HDC desktopDC = ::GetDC(NULL);
 	EnumDisplayMonitors(desktopDC, 0, MonitorEnum, (LPARAM)this);
 	::ReleaseDC(NULL, desktopDC);
+
+	ScreenMirrorWrapper::PrintLog("GDIMonitors::GDIMonitors() - Finished enumerate monitors\n");
 
 	buffer = NULL;
 	bufferSize = 0;
@@ -78,7 +86,7 @@ bool GDIMonitors::isSupported()
 
 int GDIMonitors::GetMonitors()
 {
-	return rcMonitors.size();
+	return (int)rcMonitors.size();
 }
 
 int GDIMonitors::GetWidth()
@@ -122,6 +130,8 @@ BOOL GDIMonitors::SetCurrentMonitor(int monitorId)
 {
 	if (monitorId < 0 || monitorId >= rcMonitors.size())
 		return false;
+
+	ScreenMirrorWrapper::PrintLog("GDIMonitors::SetCurrentMonitor() - monitor Id = %d\n", monitorId);
 
 	MonitorBase::SetCurrentMonitor(monitorId);
 
@@ -220,6 +230,8 @@ BOOL GDIMonitors::CreateCaptureStructure(HWND targetWnd)
 	hBitmap = ::CreateDIBSection(NULL, &bmpInfo, DIB_RGB_COLORS, (void**)&buffer, NULL, 0);
 	bufferSize = width * height * 4;
 	::SelectObject(hMemDC, hBitmap);
+
+	ScreenMirrorWrapper::PrintLog("GDIMonitors::CreateCaptureStructure() is completed\n");
 
 	return TRUE;
 }

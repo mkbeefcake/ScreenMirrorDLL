@@ -12,6 +12,7 @@
 #include <string.h>
 #include <strsafe.h>
 #include <tchar.h>
+#include <psapi.h>
 
 #include "../ScreenMirrorDll/ComPtr.h"
 #include "../ScreenMirrorDll/ScreenMirror.h"
@@ -129,22 +130,95 @@ void foo(ScreenMirrorWrapper* wrapper, int threadId)
 	wrapper->CloseCapture();
 }
 
-//BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
-//{
-//	WCHAR class_name[512];
-//	WCHAR title[512];
-//	GetClassName(hwnd, class_name, sizeof(class_name));
-//	GetWindowText(hwnd, title, sizeof(title));
-//	wprintf(L"Window %s : %s \n", title, class_name);
-//
-//	return TRUE;
-//}
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+{
+	WCHAR class_name[512];
+	WCHAR title[512];
+
+	if (!hwnd)
+		return TRUE;		// Not a window
+	if (!::IsWindowVisible(hwnd))
+		return TRUE;		// Not visible
+	if (!SendMessage(hwnd, WM_GETTEXT, sizeof(title), (LPARAM)title))
+		return TRUE;		// No window title
+
+	GetClassName(hwnd, class_name, sizeof(class_name));
+	wprintf(L"%s : %s \n", title, class_name);
+
+	return TRUE;
+}
+
+void PrintProcessNameAndID(DWORD processID)
+{
+	TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
+
+	// Get a handle to the process.
+
+	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
+		PROCESS_VM_READ,
+		FALSE, processID);
+
+	// Get the process name.
+
+	if (NULL != hProcess)
+	{
+		HMODULE hMod;
+		DWORD cbNeeded;
+
+		if (EnumProcessModules(hProcess, &hMod, sizeof(hMod),
+			&cbNeeded))
+		{
+			GetModuleBaseName(hProcess, hMod, szProcessName,
+				sizeof(szProcessName) / sizeof(TCHAR));
+		}
+
+		// Print the process name and identifier.
+		_tprintf(TEXT("%s  (PID: %u)\n"), szProcessName, processID);
+	}
+
+
+	// Release the handle to the process.
+	CloseHandle(hProcess);
+}
+
+
+int PrintProcesses()
+{
+	DWORD aProcesses[1024], cbNeeded, cProcesses;
+	unsigned int i;
+
+	if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded))
+	{
+		return 1;
+	}
+
+
+	// Calculate how many process identifiers were returned.
+
+	cProcesses = cbNeeded / sizeof(DWORD);
+
+	// Print the name and process identifier for each process.
+
+	for (i = 0; i < cProcesses; i++)
+	{
+		if (aProcesses[i] != 0)
+		{
+			PrintProcessNameAndID(aProcesses[i]);
+		}
+	}
+
+	return 0;
+}
 
 int main()
 {
 	HRESULT hr;
 
-	//EnumWindows(EnumWindowsProc, NULL);
+	//PrintProcesses();
+	//return 0;
+
+	EnumWindows(EnumWindowsProc, NULL);
+	return 0;
 
 	ScreenMirrorWrapper* wrapper = new ScreenMirrorWrapper();
 	wrapper->Initialize();

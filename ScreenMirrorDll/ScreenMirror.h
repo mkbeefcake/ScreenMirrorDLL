@@ -14,10 +14,11 @@
 #include "ComPtr.h"
 #include "DXGI1_2.h"
 #include <vector>
-#include "GDIMonitor.h"
 
-typedef void (*ChangedWindowCallback)(int width, int height);
-typedef std::vector<ChangedWindowCallback> ChangedWindowFuncList;
+//typedef void (*ChangedWindowCallback)(int width, int height);
+//typedef std::vector<ChangedWindowCallback> ChangedWindowFuncList;
+
+class GDIMonitors;
 
 class SCREENMIRROR_API ScreenMirrorWrapper
 {
@@ -28,7 +29,7 @@ public:
 public:
 
 	bool Initialize();
-	bool RegisterCallback(ChangedWindowCallback callBack);
+	//bool RegisterCallback(ChangedWindowCallback callBack);
 
 	bool StartCapture();
 	bool CloseCapture();
@@ -37,9 +38,10 @@ public:
 
 	bool GetScreenSize(int& width, int& height);
 	bool GetScreenFrame(void* buffer, UINT bufferSize);
+	
+	static int PrintLog(const char* fmt...);
 
 private:
-	int PrintLog(const char* fmt...);
 
 	bool Finalize();
 	int GetNextScreenFrame();
@@ -53,7 +55,7 @@ private:
 	PVOID screenBuffer;
 	UINT  screenBufferSize;
 
-	ChangedWindowFuncList changedWindowFuncs;
-	GDIMonitors		gdiMonitors;
+	//ChangedWindowFuncList changedWindowFuncs;
+	GDIMonitors*		gdiMonitors;
 
 };

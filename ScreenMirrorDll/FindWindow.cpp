@@ -30,7 +30,7 @@ BOOL InitialiseResources()
 		goto InitialiseResources_0;
 	}
 
-	g_hRectanglePen = CreatePen(PS_SOLID, 5, RGB(256, 0, 0));
+	g_hRectanglePen = CreatePen(PS_DASH, 5, RGB(255, 255, 0));
 	if (g_hRectanglePen == NULL)
 	{
 		bRet = FALSE;
@@ -505,7 +505,7 @@ BOOL CALLBACK SearchWindowDialogProc
 		HWND hComboBox = ::GetDlgItem(hwndDlg, IDC_MONITORS);
 		::SendMessage(hComboBox, (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)L"No Monitor");
 
-		for (int i = 0; i < globalMonitors; i++) 
+		for (ULONG i = 0; i < globalMonitors; i++) 
 		{
 			std::wstring monitor = L"Monitor ";
 			monitor.append(std::to_wstring(i));
@@ -556,7 +556,7 @@ BOOL CALLBACK SearchWindowDialogProc
 			if (wID == IDOK)
 			{
 				HWND hComboBox = ::GetDlgItem(hwndDlg, IDC_MONITORS);
-				INT selectedIndex = ::SendMessage(hComboBox, CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+				INT selectedIndex = (INT)::SendMessage(hComboBox, CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
 
 				if (selectedIndex == CB_ERR) {
 					globalSelectedMonitor = -1;
