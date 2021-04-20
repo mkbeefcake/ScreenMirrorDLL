@@ -2,11 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
-#define IDC_CURSOR_SEARCH_WINDOW        101
 #define IDR_MENU_MAIN                   102
 #define IDD_DIALOG_SEARCH_WINDOW        103
-#define IDB_BITMAP_FINDER_EMPTY         106
-#define IDB_BITMAP_FINDER_FILLED        107
 #define IDI_ICON1                       109
 #define IDI_TRAY                        109
 #define IDC_STATIC_X_POS                1000

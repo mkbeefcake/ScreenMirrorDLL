@@ -61,8 +61,6 @@ bool ScreenMirrorWrapper::Initialize()
 {
 	bool bRet = true;
 
-	InitialiseResources();
-
 	PrintLog("ScreenMirrorWrapper::Initialize() - Initialized resources. \n");
 
 	//
@@ -90,8 +88,6 @@ bool ScreenMirrorWrapper::Initialize()
 
 bool ScreenMirrorWrapper::Finalize()
 {
-	UninitialiseResources();
-
 	if (bThreadStarted) 
 	{
 		refCount = 0;
@@ -213,7 +209,9 @@ bool ScreenMirrorWrapper::SelectWindowDialog()
 	INT selectedMonitor = -1;
 	HWND selectedWindow = NULL;
 
-	BOOL bRet = StartSearchWindowDialog(gdiMonitors->GetMonitors(), selectedMonitor, selectedWindow);	// multiple monitors count
+	FindWindowDialog findWindow;
+
+	BOOL bRet = findWindow.StartSearchWindowDialog(gdiMonitors->GetMonitors(), selectedMonitor, selectedWindow);	// multiple monitors count
 	if (bRet == TRUE)
 	{
 		globalMutex.lock();

@@ -217,8 +217,8 @@ int main()
 	//PrintProcesses();
 	//return 0;
 
-	EnumWindows(EnumWindowsProc, NULL);
-	return 0;
+	//EnumWindows(EnumWindowsProc, NULL);
+	//return 0;
 
 	ScreenMirrorWrapper* wrapper = new ScreenMirrorWrapper();
 	wrapper->Initialize();

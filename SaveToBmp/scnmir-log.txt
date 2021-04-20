@@ -217,3 +217,70 @@ CaptureThread::() Started...
 ScreenMirrorWrapper::CloseCapture() - Ref = 0
 CaptureThread::() Stopped...
 ScreenMirrorWrapper::~ScreenMirrorWrapper() is called.
+ScreenMirrorWrapper::ScreenMirrorWrapper() is called.
+GDIMonitors::GDIMonitors() is called
+GDIMonitors::MonitorEnum() - HDC = 0x57011a89, Index = 1 
+GDIMonitors::MonitorEnum() - HDC = 0x910119d1, Index = 2 
+GDIMonitors::GDIMonitors() - Finished enumerate monitors
+GDIMonitors::SetCurrentMonitor() - monitor Id = 0
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::Initialize() - Initialized resources. 
+GDIMonitors::SetCurrentMonitor() - monitor Id = 0
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::StartCapture() - Ref = 1
+CaptureThread::() Started...
+ScreenMirrorWrapper::CloseCapture() - Ref = 0
+CaptureThread::() Stopped...
+ScreenMirrorWrapper::~ScreenMirrorWrapper() is called.
+ScreenMirrorWrapper::ScreenMirrorWrapper() is called.
+GDIMonitors::GDIMonitors() is called
+GDIMonitors::MonitorEnum() - HDC = 0x5001191e, Index = 1 
+GDIMonitors::MonitorEnum() - HDC = 0x4a012173, Index = 2 
+GDIMonitors::GDIMonitors() - Finished enumerate monitors
+GDIMonitors::SetCurrentMonitor() - monitor Id = 0
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::Initialize() - Initialized resources. 
+GDIMonitors::SetCurrentMonitor() - monitor Id = 1
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::StartCapture() - Ref = 1
+CaptureThread::() Started...
+ScreenMirrorWrapper::CloseCapture() - Ref = 0
+CaptureThread::() Stopped...
+ScreenMirrorWrapper::~ScreenMirrorWrapper() is called.
+ScreenMirrorWrapper::ScreenMirrorWrapper() is called.
+GDIMonitors::GDIMonitors() is called
+GDIMonitors::MonitorEnum() - HDC = 0xb001216a, Index = 1 
+GDIMonitors::MonitorEnum() - HDC = 0x77012735, Index = 2 
+GDIMonitors::GDIMonitors() - Finished enumerate monitors
+GDIMonitors::SetCurrentMonitor() - monitor Id = 0
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::Initialize() - Initialized resources. 
+ScreenMirrorWrapper::StartCapture() - Ref = 1
+CaptureThread::() Started...
+ScreenMirrorWrapper::ScreenMirrorWrapper() is called.
+GDIMonitors::GDIMonitors() is called
+GDIMonitors::MonitorEnum() - HDC = 0x10011b94, Index = 1 
+GDIMonitors::MonitorEnum() - HDC = 0x1f011942, Index = 2 
+GDIMonitors::GDIMonitors() - Finished enumerate monitors
+GDIMonitors::SetCurrentMonitor() - monitor Id = 0
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::Initialize() - Initialized resources. 
+ScreenMirrorWrapper::StartCapture() - Ref = 1
+CaptureThread::() Started...
+ScreenMirrorWrapper::CloseCapture() - Ref = 0
+CaptureThread::() Stopped...
+ScreenMirrorWrapper::~ScreenMirrorWrapper() is called.
+ScreenMirrorWrapper::ScreenMirrorWrapper() is called.
+GDIMonitors::GDIMonitors() is called
+GDIMonitors::MonitorEnum() - HDC = 0x30012785, Index = 1 
+GDIMonitors::MonitorEnum() - HDC = 0x7c0127e0, Index = 2 
+GDIMonitors::GDIMonitors() - Finished enumerate monitors
+GDIMonitors::SetCurrentMonitor() - monitor Id = 0
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::Initialize() - Initialized resources. 
+GDIMonitors::CreateCaptureStructure() is completed
+ScreenMirrorWrapper::StartCapture() - Ref = 1
+CaptureThread::() Started...
+ScreenMirrorWrapper::CloseCapture() - Ref = 0
+CaptureThread::() Stopped...
+ScreenMirrorWrapper::~ScreenMirrorWrapper() is called.

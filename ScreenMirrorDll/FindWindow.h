@@ -2,46 +2,22 @@
 
 #include <windows.h>
 
-extern HINSTANCE globalInstance;
+class FindWindowDialog
+{
 
-BOOL InitialiseResources();
-BOOL UninitialiseResources();
+public:
+	FindWindowDialog();
+	~FindWindowDialog();
 
-BOOL StartSearchWindowDialog(
-	UINT monitors, 
-	INT &selectedMonitor, 
-	HWND &selectedWindow);
+public:
+	BOOL StartSearchWindowDialog(UINT monitors, INT& selectedMonitor, HWND& selectedWindow);
 
-BOOL CheckWindowValidity(
-	HWND hwndDialog, 
-	HWND hwndToCheck);
+private:
+	static BOOL CALLBACK SearchWindowDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam);
 
-long DoMouseMove(
-	HWND hwndDialog,
-	UINT message,
-	WPARAM wParam,
-	LPARAM lParam
-);
+private:
 
-long DoMouseUp(
-	HWND hwndDialog,
-	UINT message,
-	WPARAM wParam,
-	LPARAM lParam
-);
-
-BOOL SetFinderToolImage(HWND hwndDialog, BOOL bSet);
-BOOL MoveCursorPositionToBullsEye(HWND hwndDialog);
-long SearchWindow(HWND hwndDialog);
-long DisplayInfoOnFoundWindow(HWND hwndDialog, HWND hwndFoundWindow);
-long RefreshWindow(HWND hwndWindowToBeRefreshed);
-long HighlightFoundWindow(HWND hwndDialog, HWND hwndFoundWindow);
-
-BOOL CALLBACK SearchWindowDialogProc(
-	HWND hwndDlg, // handle to dialog box 
-	UINT uMsg, // message 
-	WPARAM wParam, // first message parameter 
-	LPARAM lParam // second message parameter 
-);
-
+	// nothing 
+};
 
