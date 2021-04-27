@@ -113,7 +113,7 @@ void foo(ScreenMirrorWrapper* wrapper, int threadId)
 
 	wrapper->StartCapture();
 
-	for (int i = 0; i < 203; i++) {
+	for (int i = 0; i < 303; i++) {
 		::Sleep(40);
 		wrapper->GetScreenFrame(buffer, bufferSize);
 		

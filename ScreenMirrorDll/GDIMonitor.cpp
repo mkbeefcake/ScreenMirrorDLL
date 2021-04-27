@@ -119,7 +119,7 @@ BOOL GDIMonitors::GetScreenData(void* dstBuffer, unsigned int dstBufferSize)
 		return FALSE;
 
 	if (UpdateBitmapForCapture())
-		return TRUE;
+		return FALSE;
 
 	::UpdateWindow(targetWindow);
 	::BitBlt(hMemDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);

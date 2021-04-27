@@ -261,7 +261,15 @@ int ScreenMirrorWrapper::GetNextScreenFrame()
 			memset(screenBuffer, 0, screenBufferSize);
 		}
 
-		gdiMonitors->GetScreenData(screenBuffer, screenBufferSize);
+		if (gdiMonitors->GetScreenData(screenBuffer, screenBufferSize) == FALSE) 
+		{
+			// Indicates buffer is NULL or needs to recreate buffer
+
+			if (screenBuffer) {
+				free(screenBuffer);
+				screenBuffer = NULL; screenBufferSize = 0;
+			}
+		}
 	}
 	globalMutex.unlock();
 	return size;
