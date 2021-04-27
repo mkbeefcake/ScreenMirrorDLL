@@ -149,7 +149,7 @@ void CaptureThread(ScreenMirrorWrapper* wrapper)
 
 	do
 	{
-		::Sleep(100);
+		::Sleep(10);
 		if (wrapper->GetNextScreenFrame() < -1)
 			break;
 
@@ -185,10 +185,9 @@ bool ScreenMirrorWrapper::GetScreenFrame(void* buffer, UINT bufferSize)
 	if (buffer == NULL || bufferSize <= 0)
 		return false;
 
-	UINT copySize = std::min<UINT>(bufferSize, screenBufferSize);
-
 	globalMutex.lock();
 	{
+		UINT copySize = std::min<UINT>(bufferSize, screenBufferSize);
 		if (screenBuffer)
 		{
 			memcpy(buffer, screenBuffer, copySize);

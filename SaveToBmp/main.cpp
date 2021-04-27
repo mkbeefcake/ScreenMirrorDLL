@@ -117,12 +117,12 @@ void foo(ScreenMirrorWrapper* wrapper, int threadId)
 		::Sleep(40);
 		wrapper->GetScreenFrame(buffer, bufferSize);
 		
-		if (i % 100 == 0) 
+		if (i % 40 == 0) 
 		{
 			int width = 0, height = 0;
 			wrapper->GetScreenSize(width, height);
 
-			printf("Grabbed %d frame \n", i);
+			printf("Grabbed %d frame : [%d, %d]\n", i, width, height);
 			saveBMP(buffer, bufferSize, threadId, i, width, height);
 		}
 	}
@@ -225,14 +225,14 @@ int main()
 	wrapper->SelectWindowDialog();
 
 	std::thread thread1(foo, wrapper, 1);
-	//std::thread thread2(foo, wrapper, 2);
+	std::thread thread2(foo, wrapper, 2);
 	//std::thread thread3(foo, wrapper, 3);
 	//std::thread thread4(foo, wrapper, 4);
 
 	////::Sleep(500);
 
 	thread1.join();
-	//thread2.join();
+	thread2.join();
 	//thread3.join();
 	//thread4.join();
 

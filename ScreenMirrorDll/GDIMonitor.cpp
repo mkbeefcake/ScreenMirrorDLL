@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GDIMonitor.h"
 #include "ScreenMirror.h"
+#include <mutex>
 
 static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
 {
@@ -117,6 +118,9 @@ BOOL GDIMonitors::GetScreenData(void* dstBuffer, unsigned int dstBufferSize)
 	if (minSize <= 0)
 		return FALSE;
 
+	if (UpdateBitmapForCapture())
+		return TRUE;
+
 	::UpdateWindow(targetWindow);
 	::BitBlt(hMemDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);
 	::GdiFlush();
@@ -215,10 +219,6 @@ BOOL GDIMonitors::CreateCaptureStructure(HWND targetWnd)
 	//buffer = (char*) malloc(bufferSize);
 	//memset(buffer, 0, bufferSize);
 
-	//
-	// Create bitmap information
-	//
-
 	BITMAPINFO bmpInfo;
 	bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmpInfo.bmiHeader.biWidth = width;
@@ -232,6 +232,53 @@ BOOL GDIMonitors::CreateCaptureStructure(HWND targetWnd)
 	::SelectObject(hMemDC, hBitmap);
 
 	ScreenMirrorWrapper::PrintLog("GDIMonitors::CreateCaptureStructure() is completed\n");
+
+	return TRUE;
+}
+
+BOOL GDIMonitors::UpdateBitmapForCapture()
+{
+	RECT rect;
+	UINT curWidth = 0, curHeight = 0;
+
+	if (isMonitorCapture == FALSE) {
+		::GetWindowRect(targetWindow, &rect);
+	}
+	else {
+		//
+		return FALSE;
+	}
+
+	curWidth = rect.right - rect.left;
+	curHeight = rect.bottom - rect.top;
+
+	if (curWidth == width && curHeight == height)
+		return FALSE;
+
+	printf("Resized : [%d, %d] => [%d, %d]\n", width, height, curWidth, curHeight);
+
+	//
+	// Create bitmap information
+	//
+	if (hBitmap) {
+		::DeleteObject(hBitmap); hBitmap = NULL;
+		bufferSize = 0;  buffer = NULL;
+	}
+
+	width = curWidth;
+	height = curHeight;
+
+	BITMAPINFO bmpInfo;
+	bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmpInfo.bmiHeader.biWidth = width;
+	bmpInfo.bmiHeader.biHeight = height;
+	bmpInfo.bmiHeader.biPlanes = 1;
+	bmpInfo.bmiHeader.biBitCount = 32;
+	bmpInfo.bmiHeader.biCompression = BI_RGB;
+
+	hBitmap = ::CreateDIBSection(NULL, &bmpInfo, DIB_RGB_COLORS, (void**)&buffer, NULL, 0);
+	bufferSize = width * height * 4;
+	::SelectObject(hMemDC, hBitmap);
 
 	return TRUE;
 }
