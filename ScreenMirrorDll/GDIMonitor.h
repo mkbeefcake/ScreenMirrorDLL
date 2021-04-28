@@ -26,7 +26,7 @@ public:
 
 private:
 
-	BOOL UpdateBitmapForCapture();
+	BOOL WaitUntilResizingFinished();
 	BOOL CreateCaptureStructure(HWND targetWnd);
 
 	friend static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData);

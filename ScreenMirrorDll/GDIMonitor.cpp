@@ -118,7 +118,7 @@ BOOL GDIMonitors::GetScreenData(void* dstBuffer, unsigned int dstBufferSize)
 	if (minSize <= 0)
 		return FALSE;
 
-	if (UpdateBitmapForCapture())
+	if (WaitUntilResizingFinished() == TRUE)
 		return FALSE;
 
 	::UpdateWindow(targetWindow);
@@ -236,7 +236,7 @@ BOOL GDIMonitors::CreateCaptureStructure(HWND targetWnd)
 	return TRUE;
 }
 
-BOOL GDIMonitors::UpdateBitmapForCapture()
+BOOL GDIMonitors::WaitUntilResizingFinished()
 {
 	RECT rect;
 	UINT curWidth = 0, curHeight = 0;
@@ -252,8 +252,40 @@ BOOL GDIMonitors::UpdateBitmapForCapture()
 	curWidth = rect.right - rect.left;
 	curHeight = rect.bottom - rect.top;
 
-	if (curWidth == width && curHeight == height)
+	if (curWidth == width && curHeight == height) {
 		return FALSE;
+	}
+	else 
+	{
+
+		//
+		// Already started to resize, so Wait until resizing finished
+		//
+
+		UINT newWidth = curWidth, newHeight = curHeight;
+
+		do
+		{
+			curWidth = newWidth; curHeight = newHeight;
+
+			::Sleep(100);
+
+			if (isMonitorCapture == FALSE) {
+
+				::GetWindowRect(targetWindow, &rect);
+
+				newWidth = rect.right - rect.left;
+				newHeight = rect.bottom - rect.top;
+			}
+			else {
+				return FALSE;
+			}
+			
+			printf("Resizing : [%d, %d] => [%d, %d]\n", curWidth, curHeight, newWidth, newHeight);
+
+		} while (newWidth != curWidth || newHeight != curHeight);
+
+	}
 
 	printf("Resized : [%d, %d] => [%d, %d]\n", width, height, curWidth, curHeight);
 
