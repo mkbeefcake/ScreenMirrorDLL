@@ -28,6 +28,7 @@ private:
 
 	BOOL WaitUntilResizingFinished();
 	BOOL CreateCaptureStructure(HWND targetWnd);
+	BOOL CalculateIntersectArea(RECT &monitorRect, RECT &windowRect, RECT& intersectRect);
 
 	friend static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData);
 

@@ -19,7 +19,10 @@ static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPA
 	HDC hDC = CreateDC(TEXT("DISPLAY"), info.szDevice, NULL, NULL);
 	pThis->hdcMonitors.push_back(hDC);
 
-	ScreenMirrorWrapper::PrintLog("GDIMonitors::MonitorEnum() - HDC = 0x%x, Index = %d \n", 
+	printf("Monitor %d : HDC = 0x%x, [%d, %d, %d, %d]\n", 
+		pThis->hdcMonitors.size(), hDC, 
+		lprcMonitor->left, lprcMonitor->top, lprcMonitor->right, lprcMonitor->bottom);
+	ScreenMirrorWrapper::PrintLog("GDIMonitors::MonitorEnum() - HDC = 0x%x, Index = %d \n",
 		hDC, pThis->hdcMonitors.size());
 
 	return TRUE;
@@ -121,9 +124,31 @@ BOOL GDIMonitors::GetScreenData(void* dstBuffer, unsigned int dstBufferSize)
 	if (WaitUntilResizingFinished() == TRUE)
 		return FALSE;
 
-	::UpdateWindow(targetWindow);
-	::BitBlt(hMemDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);
-	::GdiFlush();
+	if (isMonitorCapture == TRUE) 
+	{
+
+		//::UpdateWindow(targetWindow);
+		 ::BitBlt(hMemDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY | CAPTUREBLT);
+		//::GdiFlush();
+	}
+	else
+	{
+		for (int i = 0; i < hMonitors.size(); i++)
+		{
+			HDC hMonDC = hdcMonitors[i];
+			RECT monitorRect = rcMonitors[i];
+			RECT intersectRect, windowRect;
+
+			::GetWindowRect(targetWindow, &windowRect);
+			CalculateIntersectArea(monitorRect, windowRect, intersectRect);
+			::BitBlt(hMemDC, intersectRect.left - windowRect.left, intersectRect.top - windowRect.top,
+				intersectRect.right - intersectRect.left, intersectRect.bottom - intersectRect.top,
+				hMonDC, intersectRect.left - monitorRect.left, intersectRect.top - monitorRect.top, SRCCOPY | CAPTUREBLT);
+			
+			printf("Intersect Rect %d : [%d, %d, %d, %d]\n", i, 
+				intersectRect.left, intersectRect.top, intersectRect.right, intersectRect.bottom);
+		}
+	}
 
 	memcpy(dstBuffer, buffer, minSize);
 
@@ -153,6 +178,47 @@ BOOL GDIMonitors::SetTargetWindow(HWND targetWnd)
 
 	isMonitorCapture = FALSE;
 	CreateCaptureStructure(targetWnd);
+
+	return TRUE;
+}
+
+BOOL GDIMonitors::CalculateIntersectArea(RECT& monitorRect, RECT& windowRect, RECT& intersectRect)
+{
+	// Calculate left 
+
+	if (monitorRect.left <= windowRect.left && windowRect.left <= monitorRect.right) 
+		intersectRect.left = windowRect.left;
+	else if (windowRect.left <= monitorRect.left) 
+		intersectRect.left = monitorRect.left;
+	else if (monitorRect.right <= windowRect.left)
+		intersectRect.left = monitorRect.right;
+
+	// Calculate right
+
+	if (monitorRect.left <= windowRect.right && windowRect.right <= monitorRect.right)
+		intersectRect.right = windowRect.right;
+	else if (windowRect.right <= monitorRect.left)
+		intersectRect.right = monitorRect.left;
+	else if (monitorRect.right <= windowRect.right)
+		intersectRect.right = monitorRect.right;
+
+	// Calculate top
+
+	if (monitorRect.top <= windowRect.top && windowRect.top <= monitorRect.bottom)
+		intersectRect.top = windowRect.top;
+	else if (windowRect.top <= monitorRect.top)
+		intersectRect.top = monitorRect.top;
+	else if (monitorRect.bottom <= windowRect.top)
+		intersectRect.top = monitorRect.bottom;
+
+	// Calculate bottom
+
+	if (monitorRect.top <= windowRect.bottom && windowRect.bottom <= monitorRect.bottom)
+		intersectRect.bottom = windowRect.bottom;
+	else if (windowRect.bottom <= monitorRect.top)
+		intersectRect.bottom = monitorRect.top;
+	else if (monitorRect.bottom <= windowRect.bottom)
+		intersectRect.bottom = monitorRect.bottom;
 
 	return TRUE;
 }
@@ -188,7 +254,7 @@ BOOL GDIMonitors::CreateCaptureStructure(HWND targetWnd)
 	//
 
 	if (isMonitorCapture == FALSE) {
-		hDC = ::GetDC(targetWindow);
+		hDC = ::GetWindowDC(targetWindow);
 	}
 	else {
 		hDC = hdcMonitors[curMonitorID];
@@ -203,6 +269,7 @@ BOOL GDIMonitors::CreateCaptureStructure(HWND targetWnd)
 	RECT rect;
 	if (isMonitorCapture == FALSE) {
 		::GetWindowRect(targetWindow, &rect);
+		printf("Window 0x%x : [%d, %d, %d, %d]\n", targetWindow, rect.left, rect.top, rect.right, rect.bottom);
 	}
 	else {
 		rect = rcMonitors[curMonitorID];

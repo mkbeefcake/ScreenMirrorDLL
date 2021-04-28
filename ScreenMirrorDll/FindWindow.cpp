@@ -31,11 +31,25 @@ BOOL CALLBACK FindWindowDialog::EnumWindowsProc(HWND hWnd, LPARAM lParam)
 	//WCHAR class_name[512];
 	WCHAR title[512];
 
-	if (!hWnd)
-		return TRUE;		// Not a window
+	int len = GetWindowTextLength(hWnd);
+	HWND owner = GetWindow(hWnd, GW_OWNER);
+	LONG exstyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+	
+	if (len == 0 || !IsWindow(hWnd) || IsIconic(hWnd) || !IsWindowVisible(hWnd) ||
+		(owner && !(exstyle & WS_EX_APPWINDOW))) {
+		return TRUE;
+	}
 
-	if (!::IsWindowVisible(hWnd))
-		return TRUE;		// Not visible
+	// Skip the Program Manager window and the Start button.
+	const size_t kClassLength = 256;
+	WCHAR class_name[kClassLength];
+	GetClassName(hWnd, class_name, kClassLength);
+
+	// Skip Program Manager window and the Start button. This is the same logic
+	// that's used in Win32WindowPicker in libjingle. Consider filtering other
+	// windows as well (e.g. toolbars).
+	if (wcscmp(class_name, L"Progman") == 0 || wcscmp(class_name, L"Button") == 0)
+		return TRUE;
 
 	if (!SendMessage(hWnd, WM_GETTEXT, sizeof(title), (LPARAM)title))
 		return TRUE;		// No window title
